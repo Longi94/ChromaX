@@ -34,7 +34,8 @@
             <StatusBarItem Grid.Column="3">
                 <Menu>
                     <MenuItem Header="Disconnected">
-                        <MenuItem Header="Connect" />
+                        <MenuItem Header="Connect" Click="Connect_Click" />
+                        <MenuItem Header="Disconnect" Click="Disconnect_Click" />
                     </MenuItem>
                 </Menu>
             </StatusBarItem>
