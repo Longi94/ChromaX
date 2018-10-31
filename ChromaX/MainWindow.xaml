@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChromaX"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="ChromaX" Height="450" Width="800">
+        Title="ChromaX" Height="450" Width="800"
+        Loaded="Window_Loaded">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Open" />
             </MenuItem>
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom" >
+        <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -25,18 +27,25 @@
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <Separator Grid.Column="1"/>
+            <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2">
                 <TextBlock FontFamily="Segoe MDL2 Assets">&#xE144;</TextBlock>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3">
                 <Menu>
                     <MenuItem Header="Disconnected">
-                        <MenuItem Header="Connect"/>
+                        <MenuItem Header="Connect" />
                     </MenuItem>
                 </Menu>
             </StatusBarItem>
         </StatusBar>
+        <Grid DockPanel.Dock="Right">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <xctk:ColorPicker Grid.Row="0" Name="ColorPicker" />
+        </Grid>
         <Grid Name="RootGrid">
             <Label>Main Content</Label>
         </Grid>
