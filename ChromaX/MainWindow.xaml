@@ -7,10 +7,9 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:converter="clr-namespace:ChromaX.Converter"
         mc:Ignorable="d"
-        Title="ChromaX" Height="450" Width="800"
-        Loaded="Window_Loaded">
+        Title="ChromaX" Height="450" Width="800">
     <Window.Resources>
-        <converter:BooleanToStringConverter 
+        <converter:BooleanToStringConverter
             x:Key="SdkConnectionHeaderConverter"
             True="Connected"
             False="Disconnected" />
@@ -40,7 +39,8 @@
             </StatusBarItem>
             <StatusBarItem Grid.Column="3">
                 <Menu>
-                    <MenuItem Header="{Binding SdkInitialized, Converter={StaticResource SdkConnectionHeaderConverter}}">
+                    <MenuItem
+                        Header="{Binding SdkInitialized, Converter={StaticResource SdkConnectionHeaderConverter}}">
                         <MenuItem Header="Connect" Command="{Binding ConnectSdkCommand}"
                                   Visibility="{Binding SdkInitialized, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
                         <MenuItem Header="Disconnect" Command="{Binding DisconnectSdkCommand}"
@@ -54,7 +54,11 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <xctk:ColorPicker Grid.Row="0" Name="ColorPicker" />
+            <xctk:ColorPicker
+                Grid.Row="0"
+                Name="ColorPicker"
+                SelectedColor="{Binding SelectedColor}"
+                AvailableColors="{Binding AvailableColors}" />
         </Grid>
         <Grid Name="RootGrid">
             <Label>Main Content</Label>
