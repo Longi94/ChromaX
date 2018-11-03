@@ -13,7 +13,8 @@ namespace ChromaX.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly ChromaService _chromaService;
 
@@ -121,9 +122,12 @@ namespace ChromaX.ViewModel
 
         private static readonly int CellSize = 50;
 
-        private readonly ObservableCollection<PreviewCellViewModel> _previewCells = new ObservableCollection<PreviewCellViewModel>();
+        private readonly ObservableCollection<PreviewCellViewModel> _previewCells =
+            new ObservableCollection<PreviewCellViewModel>();
 
         public IEnumerable<PreviewCellViewModel> PreviewCells => _previewCells;
+
+        private Grid _grid = new Grid();
 
         public void CreateKeyboardGrid()
         {
@@ -159,9 +163,13 @@ namespace ChromaX.ViewModel
                 return _setCellColorCommand;
             }
         }
+
         private void SetCellColor(PreviewCellViewModel cell)
         {
             cell.Color = new SolidColorBrush(_selectedColor);
+            _grid.Set(cell.Row, cell.Column, new ChromaColor(_selectedColor));
+
+            _chromaService.Send(_grid, apply: true);
         }
 
         #endregion

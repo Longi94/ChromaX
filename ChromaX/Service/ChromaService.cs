@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
+using ChromaX.Model;
 using log4net;
 using RestSharp;
 using RestSharp.Deserializers;
@@ -44,9 +45,18 @@ namespace ChromaX.Service
 
         private RestClient _client;
 
+        private readonly uint[][] _colorEffectBuffer = new uint[Constants.KbRows][];
+        private readonly uint[][] _keyEffectBuffer = new uint[Constants.KbRows][];
+
         public ChromaService()
         {
             _heartbeatTimer.Elapsed += Heartbeat;
+
+            for (int i = 0; i < Constants.KbRows; i++)
+            {
+                _colorEffectBuffer[i] = new uint[Constants.KbColumns];
+                _keyEffectBuffer[i] = new uint[Constants.KbColumns];
+            }
         }
 
         /// <summary>
@@ -97,7 +107,7 @@ namespace ChromaX.Service
             {
                 Initialized = false;
 
-                SdkInit?.Invoke(this, new SdkInitEvent { Initialized = Initialized });
+                SdkInit?.Invoke(this, new SdkInitEvent {Initialized = Initialized});
                 if (response.IsSuccessful && response.Data.Result == 0)
                 {
                     Log.Info("Uninitialized Chroma SDK");
@@ -132,6 +142,74 @@ namespace ChromaX.Service
                 Log.Error(response.ErrorMessage);
             }
         }
+
+        public void Send(Grid colorGrid, Grid keyGrid = null, bool apply = false)
+        {
+            if (!Initialized)
+            {
+                return;
+            }
+
+            if (colorGrid == null)
+            {
+                throw new ArgumentNullException(nameof(colorGrid));
+            }
+
+            var body = new Dictionary<string, object>();
+            colorGrid.Serialize(_colorEffectBuffer);
+
+            if (keyGrid == null)
+            {
+                body["effect"] = "CHROMA_CUSTOM";
+                body["param"] = _colorEffectBuffer;
+            }
+            else
+            {
+                body["effect"] = "CHROMA_CUSTOM_KEY";
+
+                keyGrid.Serialize(_keyEffectBuffer);
+                body["param"] = new[] {_colorEffectBuffer, _keyEffectBuffer};
+            }
+
+            var request = new RestRequest("/keyboard", Method.POST) {RequestFormat = DataFormat.Json};
+            request.AddBody(body);
+
+            _client.ExecuteAsync<EffectResponse>(request, response =>
+            {
+                if (response.IsSuccessful)
+                {
+                    if (apply)
+                    {
+                        ApplyEffect(response.Data.Id);
+                    }
+                }
+                else
+                {
+                    Log.Error("Failed to set custom effect");
+                    Log.Error(response.ErrorMessage);
+                }
+            });
+        }
+
+        public void ApplyEffect(string id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var request = new RestRequest("/effect", Method.PUT) {RequestFormat = DataFormat.Json};
+            request.AddBody(new Dictionary<string, string> {{"id", id}});
+
+            _client.ExecuteAsync<object>(request, response =>
+            {
+                if (!response.IsSuccessful)
+                {
+                    Log.Error($"Failed to apply effect {id}");
+                    Log.Error(response.ErrorMessage);
+                }
+            });
+        }
     }
 
     public class SdkInitEvent : EventArgs
@@ -158,5 +236,14 @@ namespace ChromaX.Service
     {
         [DeserializeAs(Name = "tick")]
         public int Tick { get; set; }
+    }
+
+    internal class EffectResponse
+    {
+        [DeserializeAs(Name = "result")]
+        public int Result { get; set; }
+
+        [DeserializeAs(Name = "id")]
+        public string Id { get; set; }
     }
 }

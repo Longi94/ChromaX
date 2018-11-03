@@ -40,7 +40,7 @@ namespace ChromaX.Model
             uint g = Color.G;
             uint b = Color.B;
 
-            var bgr = (b << 16) | g | (r >> 16);
+            var bgr = (b << 16) | (g << 8) | r;
 
             if (IsKey)
             {
@@ -50,10 +50,6 @@ namespace ChromaX.Model
             return bgr;
         }
 
-        public string ToHex()
-        {
-
-            return $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}";
-        }
+        public string ToHex() => $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}";
     }
 }
