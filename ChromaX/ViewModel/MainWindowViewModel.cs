@@ -1,15 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
 using ChromaX.Model;
 using ChromaX.Service;
+using log4net;
+using log4net.Repository.Hierarchy;
 using Xceed.Wpf.Toolkit;
 
 namespace ChromaX.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ChromaService _chromaService;
 
         public MainWindowViewModel(ChromaService chromaService)
@@ -18,6 +23,7 @@ namespace ChromaX.ViewModel
             _chromaService.SdkInit += (sender, eventArgs) => SdkInitialized = eventArgs.Initialized;
 
             AddAvailableColors();
+            CreateKeyboardGrid();
         }
 
         #region Status Bar
@@ -42,7 +48,7 @@ namespace ChromaX.ViewModel
             {
                 if (_connectSdkCommand == null)
                 {
-                    _connectSdkCommand = new RelayCommand(ConnectSdk);
+                    _connectSdkCommand = new RelayCommand<object>(ConnectSdk);
                 }
 
                 return _connectSdkCommand;
@@ -57,7 +63,7 @@ namespace ChromaX.ViewModel
             {
                 if (_disconnectSdkCommand == null)
                 {
-                    _disconnectSdkCommand = new RelayCommand(DisconnectSdk);
+                    _disconnectSdkCommand = new RelayCommand<object>(DisconnectSdk);
                 }
 
                 return _disconnectSdkCommand;
@@ -107,6 +113,55 @@ namespace ChromaX.ViewModel
             _availableColors.Add(new ColorItem(ChromaColor.HotPink.Color, "HotPink"));
             _availableColors.Add(new ColorItem(ChromaColor.Orange.Color, "Orange"));
             _availableColors.Add(new ColorItem(ChromaColor.Purple.Color, "Purple"));
+        }
+
+        #endregion
+
+        #region Keyboard Preview
+
+        private static readonly int CellSize = 50;
+
+        private readonly ObservableCollection<PreviewCellViewModel> _previewCells = new ObservableCollection<PreviewCellViewModel>();
+
+        public IEnumerable<PreviewCellViewModel> PreviewCells => _previewCells;
+
+        public void CreateKeyboardGrid()
+        {
+            for (int i = 0; i < Constants.KbRows; i++)
+            {
+                for (int j = 0; j < Constants.KbColumns; j++)
+                {
+                    _previewCells.Add(new PreviewCellViewModel
+                    {
+                        Color = new SolidColorBrush(ChromaColor.Black.Color),
+                        Row = i,
+                        Column = j,
+                        X = CellSize * j,
+                        Y = CellSize * i,
+                        Size = CellSize
+                    });
+                }
+            }
+        }
+
+
+        private ICommand _setCellColorCommand;
+
+        public ICommand SetCellColorCommand
+        {
+            get
+            {
+                if (_setCellColorCommand == null)
+                {
+                    _setCellColorCommand = new RelayCommand<PreviewCellViewModel>(SetCellColor);
+                }
+
+                return _setCellColorCommand;
+            }
+        }
+        private void SetCellColor(PreviewCellViewModel cell)
+        {
+            cell.Color = new SolidColorBrush(_selectedColor);
         }
 
         #endregion

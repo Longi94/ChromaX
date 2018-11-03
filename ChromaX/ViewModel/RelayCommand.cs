@@ -3,17 +3,17 @@ using System.Windows.Input;
 
 namespace ChromaX.ViewModel
 {
-    public class RelayCommand : ICommand
+    public class RelayCommand<T> : ICommand
     {
-        private readonly Action<object> _execute;
+        private readonly Action<T> _execute;
 
-        private readonly Predicate<object> _canExecute;
+        private readonly Predicate<T> _canExecute;
 
         /// <summary>
         /// Creates a new command that can always execute.
         /// </summary>
         /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action<object> execute) : this(execute, null)
+        public RelayCommand(Action<T> execute) : this(execute, null)
         {
         }
 
@@ -22,7 +22,7 @@ namespace ChromaX.ViewModel
         /// </summary>
         /// <param name="execute">The execution logic.</param>
         /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
@@ -30,12 +30,26 @@ namespace ChromaX.ViewModel
 
         public bool CanExecute(object parameter)
         {
-            return _canExecute?.Invoke(parameter) ?? true;
+            if (_canExecute == null) return true;
+
+            if (parameter is T p)
+            {
+                return _canExecute(p);
+            }
+
+            return _canExecute(default(T));
         }
 
         public void Execute(object parameter)
         {
-            _execute(parameter);
+            if (parameter is T p)
+            {
+                _execute(p);
+            }
+            else
+            {
+                _execute(default(T));
+            }
         }
 
         public event EventHandler CanExecuteChanged

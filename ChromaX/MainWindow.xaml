@@ -61,7 +61,39 @@
                 AvailableColors="{Binding AvailableColors}" />
         </Grid>
         <Grid Name="RootGrid">
-            <Label>Main Content</Label>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <ItemsControl Name="KeyboardPreview" ItemsSource="{Binding PreviewCells}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Rectangle
+                            Width="{Binding Size}"
+                            Height="{Binding Size}"
+                            Stroke="#31d507"
+                            Fill="{Binding Color}">
+                            <Rectangle.InputBindings>
+                                <MouseBinding
+                                    Gesture="LeftClick"
+                                    Command="{Binding ElementName=KeyboardPreview, Path=DataContext.SetCellColorCommand}"
+                                    CommandParameter="{Binding}"/>
+                            </Rectangle.InputBindings>
+                            <Rectangle.RenderTransform>
+                                <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </DockPanel>
 </Window>
