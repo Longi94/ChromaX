@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ChromaX"
-             xmlns:converter="clr-namespace:ChromaX.Converter">
+             xmlns:converter="clr-namespace:ChromaX.Converter"
+             Exit="OnExit">
     <Application.Resources>
         <converter:BooleanToVisibilityConverter
             x:Key="InvertedBooleanToVisibilityConverter"

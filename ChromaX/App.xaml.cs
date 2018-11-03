@@ -26,5 +26,10 @@ namespace ChromaX
 
             window.Show();
         }
+
+        private void OnExit(object sender, ExitEventArgs e)
+        {
+            ChromaService.UnInitialize();
+        }
     }
 }
