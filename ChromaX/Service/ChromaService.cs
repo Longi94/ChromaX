@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 using log4net;
 using RestSharp;
@@ -27,6 +28,11 @@ namespace ChromaX.Service
             {"device_supported", new[] {"keyboard"}},
             {"category", "application"}
         };
+
+        /// <summary>
+        /// Event fired when the SDK is initialized or uninitialized.
+        /// </summary>
+        public event EventHandler<SdkInitEvent> SdkInit;
 
         public bool Initialized { get; private set; }
 
@@ -64,6 +70,8 @@ namespace ChromaX.Service
                     Initialized = true;
                     _heartbeatTimer.Start();
                     Log.Info("Initialized Chroma SDK");
+
+                    SdkInit?.Invoke(this, new SdkInitEvent {Initialized = Initialized});
                 }
                 else
                 {
@@ -88,6 +96,8 @@ namespace ChromaX.Service
             _client.ExecuteAsync<UnInitResponse>(request, response =>
             {
                 Initialized = false;
+
+                SdkInit?.Invoke(this, new SdkInitEvent { Initialized = Initialized });
                 if (response.IsSuccessful && response.Data.Result == 0)
                 {
                     Log.Info("Uninitialized Chroma SDK");
@@ -122,6 +132,11 @@ namespace ChromaX.Service
                 Log.Error(response.ErrorMessage);
             }
         }
+    }
+
+    public class SdkInitEvent : EventArgs
+    {
+        public bool Initialized;
     }
 
     internal class InitResponse

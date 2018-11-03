@@ -5,9 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChromaX"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:converter="clr-namespace:ChromaX.Converter"
         mc:Ignorable="d"
         Title="ChromaX" Height="450" Width="800"
         Loaded="Window_Loaded">
+    <Window.Resources>
+        <converter:BooleanToStringConverter 
+            x:Key="SdkConnectionHeaderConverter"
+            True="Connected"
+            False="Disconnected" />
+    </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -33,9 +40,11 @@
             </StatusBarItem>
             <StatusBarItem Grid.Column="3">
                 <Menu>
-                    <MenuItem Header="Disconnected">
-                        <MenuItem Header="Connect" Click="Connect_Click" />
-                        <MenuItem Header="Disconnect" Click="Disconnect_Click" />
+                    <MenuItem Header="{Binding SdkInitialized, Converter={StaticResource SdkConnectionHeaderConverter}}">
+                        <MenuItem Header="Connect" Command="{Binding ConnectSdkCommand}"
+                                  Visibility="{Binding SdkInitialized, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+                        <MenuItem Header="Disconnect" Command="{Binding DisconnectSdkCommand}"
+                                  Visibility="{Binding SdkInitialized, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </MenuItem>
                 </Menu>
             </StatusBarItem>

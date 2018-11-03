@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Media;
+﻿using System.Windows;
 using ChromaX.Model;
-using ChromaX.Service;
 using Xceed.Wpf.Toolkit;
 
 namespace ChromaX
@@ -12,11 +9,8 @@ namespace ChromaX
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ChromaService _chromaService;
-
-        public MainWindow(ChromaService chromaService)
+        public MainWindow()
         {
-            _chromaService = chromaService;
             InitializeComponent();
         }
 
@@ -36,16 +30,6 @@ namespace ChromaX
             ColorPicker.AvailableColors.Add(new ColorItem(ChromaColor.Purple.Color, "Purple"));
 
             ColorPicker.SelectedColor = ChromaColor.White.Color;
-        }
-
-        private void Connect_Click(object sender, RoutedEventArgs e)
-        {
-            _chromaService.Initialize();
-        }
-
-        private void Disconnect_Click(object sender, RoutedEventArgs e)
-        {
-            _chromaService.UnInitialize();
         }
     }
 }

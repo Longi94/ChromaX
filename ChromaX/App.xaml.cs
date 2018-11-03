@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using ChromaX.Service;
+using ChromaX.ViewModel;
 using log4net;
 
 namespace ChromaX
@@ -19,7 +20,10 @@ namespace ChromaX
             Log.Info("Application started");
             base.OnStartup(e);
 
-            var window = new MainWindow(ChromaService);
+            var mainViewModel = new MainWindowViewModel(ChromaService);
+
+            var window = new MainWindow {DataContext = mainViewModel};
+
             window.Show();
         }
     }
