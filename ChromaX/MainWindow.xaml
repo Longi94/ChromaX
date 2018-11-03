@@ -14,13 +14,23 @@
             True="Connected"
             False="Disconnected" />
     </Window.Resources>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Panel.ZIndex="100">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" />
             </MenuItem>
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom">
+        <StatusBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Panel.ZIndex="100">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -49,7 +59,7 @@
                 </Menu>
             </StatusBarItem>
         </StatusBar>
-        <Grid DockPanel.Dock="Right">
+        <Grid Grid.Column="2" Grid.Row="1" Panel.ZIndex="20" Background="LightGray">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -60,7 +70,7 @@
                 SelectedColor="{Binding SelectedColor}"
                 AvailableColors="{Binding AvailableColors}" />
         </Grid>
-        <Grid Name="RootGrid">
+        <Grid Name="RootGrid" Grid.Column="1" Grid.Row="1" Panel.ZIndex="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -95,5 +105,5 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Grid>
-    </DockPanel>
+    </Grid>
 </Window>
