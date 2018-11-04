@@ -81,6 +81,7 @@
 
             <Canvas
                 Background="Transparent"
+                MouseWheel="OnMouseWheel"
                 MouseLeftButtonDown="OnMouseDown"
                 MouseLeftButtonUp="OnMouseUp">
                 <ItemsControl Name="KeyboardPreview" ItemsSource="{Binding PreviewCells}">
@@ -90,6 +91,7 @@
                                 <Canvas.RenderTransform>
                                     <TransformGroup>
                                         <TranslateTransform X="{Binding DragOffsetX}" Y="{Binding DragOffsetY}" />
+                                        <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
                                     </TransformGroup>
                                 </Canvas.RenderTransform>
                             </Canvas>

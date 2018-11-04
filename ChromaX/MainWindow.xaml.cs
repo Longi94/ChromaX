@@ -41,5 +41,10 @@ namespace ChromaX
                 EventArgs = e
             });
         }
+
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            (DataContext as MainWindowViewModel)?.MouseWheelCommand.Execute(e);
+        }
     }
 }

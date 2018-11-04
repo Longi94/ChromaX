@@ -210,6 +210,21 @@ namespace ChromaX.ViewModel
             }
         }
 
+        private ICommand _mouseWheelCommand;
+
+        public ICommand MouseWheelCommand
+        {
+            get
+            {
+                if (_mouseWheelCommand == null)
+                {
+                    _mouseWheelCommand = new RelayCommand<MouseWheelEventArgs>(OnMouseWheel);
+                }
+
+                return _mouseWheelCommand;
+            }
+        }
+
         private void SetCellColor(PreviewCellViewModel cell)
         {
             cell.Color = new SolidColorBrush(_selectedColor);
@@ -247,6 +262,18 @@ namespace ChromaX.ViewModel
             }
         }
 
+        private double _zoom = 1.0;
+
+        public double Zoom
+        {
+            get => _zoom;
+            set
+            {
+                _zoom = value;
+                OnPropertyChanged(nameof(Zoom));
+            }
+        }
+
         private void OnMouseDown(MouseArgsWithPoint e)
         {
             Log.Debug("mouse down");
@@ -281,6 +308,15 @@ namespace ChromaX.ViewModel
             else if (_dragging)
             {
                 OnMouseUp(e);
+            }
+        }
+
+        private void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            // TODO Calculate scale center
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Zoom = Math.Max(0.1, Math.Min(2.0, Zoom + e.Delta / 1000.0));
             }
         }
 
