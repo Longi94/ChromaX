@@ -83,6 +83,7 @@
     <Compile Include="Converter\BooleanConverter.cs" />
     <Compile Include="Model\Constants.cs" />
     <Compile Include="Model\Grid.cs" />
+    <Compile Include="Mouse\MouseArgsWithPoint.cs" />
     <Compile Include="ViewModel\PreviewCellViewModel.cs" />
     <Compile Include="Service\ChromaService.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

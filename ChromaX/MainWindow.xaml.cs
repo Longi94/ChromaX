@@ -1,5 +1,8 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using ChromaX.Model;
+using ChromaX.Mouse;
+using ChromaX.ViewModel;
 using Xceed.Wpf.Toolkit;
 
 namespace ChromaX
@@ -12,6 +15,31 @@ namespace ChromaX
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            (DataContext as MainWindowViewModel)?.MouseDownCommand.Execute(new MouseArgsWithPoint
+            {
+                Position = System.Windows.Input.Mouse.GetPosition(this)
+            });
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            (DataContext as MainWindowViewModel)?.MouseUpCommand.Execute(new MouseArgsWithPoint
+            {
+                Position = System.Windows.Input.Mouse.GetPosition(this)
+            });
+        }
+
+        private void MainWindow_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            (DataContext as MainWindowViewModel)?.MouseMoveCommand.Execute(new MouseArgsWithPoint
+            {
+                Position = System.Windows.Input.Mouse.GetPosition(this),
+                EventArgs = e
+            });
         }
     }
 }

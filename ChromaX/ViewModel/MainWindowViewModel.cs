@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using ChromaX.Model;
+using ChromaX.Mouse;
 using ChromaX.Service;
 using log4net;
 using log4net.Repository.Hierarchy;
@@ -148,7 +150,6 @@ namespace ChromaX.ViewModel
             }
         }
 
-
         private ICommand _setCellColorCommand;
 
         public ICommand SetCellColorCommand
@@ -164,12 +165,123 @@ namespace ChromaX.ViewModel
             }
         }
 
+        private ICommand _mouseDownCommand;
+
+        public ICommand MouseDownCommand
+        {
+            get
+            {
+                if (_mouseDownCommand == null)
+                {
+                    _mouseDownCommand = new RelayCommand<MouseArgsWithPoint>(OnMouseDown);
+                }
+
+                return _mouseDownCommand;
+            }
+        }
+
+        private ICommand _mouseUpCommand;
+
+        public ICommand MouseUpCommand
+        {
+            get
+            {
+                if (_mouseUpCommand == null)
+                {
+                    _mouseUpCommand = new RelayCommand<MouseArgsWithPoint>(OnMouseUp);
+                }
+
+                return _mouseUpCommand;
+            }
+        }
+
+        private ICommand _mouseMoveCommand;
+
+        public ICommand MouseMoveCommand
+        {
+            get
+            {
+                if (_mouseMoveCommand == null)
+                {
+                    _mouseMoveCommand = new RelayCommand<MouseArgsWithPoint>(OnMouseMove);
+                }
+
+                return _mouseMoveCommand;
+            }
+        }
+
         private void SetCellColor(PreviewCellViewModel cell)
         {
             cell.Color = new SolidColorBrush(_selectedColor);
             _grid.Set(cell.Row, cell.Column, new ChromaColor(_selectedColor));
 
             _chromaService.Send(_grid, apply: true);
+        }
+
+        private Point _dragStart;
+        private Point _dragEnd = new Point(0, 0);
+
+        private bool _dragging;
+
+        private double _dragOffsetX;
+
+        public double DragOffsetX
+        {
+            get => _dragOffsetX;
+            set
+            {
+                _dragOffsetX = value;
+                OnPropertyChanged(nameof(DragOffsetX));
+            }
+        }
+
+        private double _dragOffsetY;
+
+        public double DragOffsetY
+        {
+            get => _dragOffsetY;
+            set
+            {
+                _dragOffsetY = value;
+                OnPropertyChanged(nameof(DragOffsetY));
+            }
+        }
+
+        private void OnMouseDown(MouseArgsWithPoint e)
+        {
+            Log.Debug("mouse down");
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                _dragStart = e.Position;
+                _dragging = true;
+            }
+        }
+
+        private void OnMouseUp(MouseArgsWithPoint e)
+        {
+            Log.Debug("mouse up");
+            _dragging = false;
+            _dragEnd.X = DragOffsetX;
+            _dragEnd.Y = DragOffsetY;
+        }
+
+        private void OnMouseMove(MouseArgsWithPoint e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) && e.EventArgs.LeftButton == MouseButtonState.Pressed)
+            {
+                // Because sometimes mousedown is not fired
+                if (!_dragging)
+                {
+                    OnMouseDown(e);
+                }
+
+                DragOffsetX = _dragEnd.X + e.Position.X - _dragStart.X;
+                DragOffsetY = _dragEnd.Y + e.Position.Y - _dragStart.Y;
+            }
+            else if (_dragging)
+            {
+                OnMouseUp(e);
+            }
         }
 
         #endregion
